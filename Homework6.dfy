@@ -20,15 +20,16 @@ function treeContains<T>(tree:Tree<T>, element:T):bool
     ensures element 
 {
 	match tree
-    case Leaf => Nil
-
+    case Leaf => false
+    case Node(left, x, right) => t == xs || treeContains(left, xs) || treeContains(right, xs)
 }
 // Note that dafny doesn't quite understand that a == b is the same thing as a <==> b when they are booleans.
 function listContains<T>(xs:List<T>, element:T):bool
 {
 	match xs
     case Nil => false
-    case t == xs || List
+    case t => t == xs || listContains(xs, t)
+
 }
 
 
