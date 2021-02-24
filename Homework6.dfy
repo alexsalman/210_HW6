@@ -3,7 +3,7 @@ datatype List<T> = Nil | Cons(T, List<T>)
 
 function flatten<T>(tree:Tree<T>):List<T>
 {
-    match Tree
+    match tree
     case Leaf => Nil
     case Node(left, right, t) => append(flatten(left), Cons(t,flatten(right)))
 }
@@ -15,23 +15,21 @@ function flatten<T>(tree:Tree<T>):List<T>
     case Nil => ys
     case Cons(x, xs') => Cons(x, append(xs', ys))
 }
-//Cons takes a single element and stick it to a list 
+//Cons takes a single element and stick it to a list
 function treeContains<T>(tree:Tree<T>, element:T):bool
-    ensures element 
+decreases tree
 {
 	match tree
     case Leaf => false
-    case Node(left, x, right) => t == xs || treeContains(left, xs) || treeContains(right, xs)
+    case Node(left, right, t) => t == element || treeContains(left, t) || treeContains(right, t)
 }
 // Note that dafny doesn't quite understand that a == b is the same thing as a <==> b when they are booleans.
 function listContains<T>(xs:List<T>, element:T):bool
 {
 	match xs
     case Nil => false
-    case t => t == xs || listContains(xs, t)
-
+    case Cons(t, xs') => t == element || listContains(xs', element)
 }
-
 
 lemma sameElements<T>(tree:Tree<T>, element:T)
 ensures treeContains(tree, element) <==> listContains(flatten(tree), element)
@@ -40,4 +38,10 @@ ensures treeContains(tree, element) <==> listContains(flatten(tree), element)
     // False => False
     // True x False
     // False x True
+    match tree
+    case Leaf => false
+    case Node(left, right, t) => {
+        sameElements(left, t);
+        sameElements(right, t);
+    }
 }
