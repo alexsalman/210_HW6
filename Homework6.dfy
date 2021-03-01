@@ -6,7 +6,7 @@ decreases tree
 {
     match tree
     case Leaf => Nil
-    case Node(left, right, t) => append(flatten(left), Cons(t,flatten(right)))
+    case Node(left, right, t) => Cons(t, append(flatten(left), flatten(right)))
 }
 
 function append<T>(xs:List<T>, ys:List<T>):List<T>
@@ -22,7 +22,7 @@ decreases tree
 {
 	match tree
     case Leaf => false
-    case Node(left, right, t) => t == element || treeContains(left, t) || treeContains(right, t)
+    case Node(left, right, t) => t == element || treeContains(left, element) || treeContains(right, element)
 }
 
 function listContains<T>(xs:List<T>, element:T):bool
@@ -64,11 +64,10 @@ ensures treeContains(tree, element) <==> listContains(flatten(tree), element)
         sameElements(right, element);
         memberAppend(element,flatten(left),flatten(right));
         assert treeContains(Node(left, right, t), element)
-            == (treeContains(left, element) || treeContains(right, element) || element == t)
-            == (listContains(flatten(left), element) || listContains(flatten(right), element) || element == t)
-            //== (listContains(append(flatten(left),flatten(right)), element) || element == t)
-            //== Cons(element, append(flatten(left),flatten(right)))
-            == listContains(flatten(tree), element)
-            ;
+            <==> (treeContains(left, element) || treeContains(right, element) || t == element)
+            <==> (listContains(flatten(left), element) || listContains(flatten(right), element) || t == element)
+            <==> (listContains(append(flatten(left),flatten(right)), element) || t == element)
+            <==> listContains (Cons(t, append(flatten(left),flatten(right))), element)
+            <==> listContains(flatten(Node(left, right, t)), element);
     }
 }
