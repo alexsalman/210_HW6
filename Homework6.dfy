@@ -1,3 +1,6 @@
+//completed and submitted on 3/1/2021
+//alex salman aalsalma@ucsc.edu
+
 datatype Tree<T> = Leaf | Node(Tree<T>, Tree<T>, T)
 datatype List<T> = Nil | Cons(T, List<T>)
 
@@ -34,7 +37,8 @@ decreases xs
 }
 
 lemma memberAppend<T>(x:T,ys:List<T>,zs:List<T>)
-decreases ys, zs
+decreases ys
+decreases zs
 ensures listContains(append(ys,zs), x) == (listContains(ys, x) || listContains(zs, x))
 {
     match ys
@@ -47,8 +51,8 @@ ensures listContains(append(ys,zs), x) == (listContains(ys, x) || listContains(z
             == listContains(Cons(y,append(ys',zs)),x)
             == (x==y || listContains((append(ys',zs)),x))
             == (x==y || listContains(ys',x) || listContains(zs,x))
-            == (listContains(Cons(y,ys'),x)  || listContains(zs,x))
-            == (listContains(ys,x)           || listContains(zs,x))
+            == (listContains(Cons(y,ys'),x) || listContains(zs,x))
+            == (listContains(ys,x)          || listContains(zs,x))
             ;
     }
 }
@@ -64,10 +68,11 @@ ensures treeContains(tree, element) <==> listContains(flatten(tree), element)
         sameElements(right, element);
         memberAppend(element,flatten(left),flatten(right));
         assert treeContains(Node(left, right, t), element)
-            <==> (treeContains(left, element) || treeContains(right, element) || t == element)
-            <==> (listContains(flatten(left), element) || listContains(flatten(right), element) || t == element)
-            <==> (listContains(append(flatten(left),flatten(right)), element) || t == element)
-            <==> listContains (Cons(t, append(flatten(left),flatten(right))), element)
-            <==> listContains(flatten(Node(left, right, t)), element);
+            == (treeContains(left, element) || treeContains(right, element) || t == element)
+            == (listContains(flatten(left), element) || listContains(flatten(right), element) || t == element)
+            == (listContains(append(flatten(left),flatten(right)), element) || t == element)
+            == listContains (Cons(t, append(flatten(left),flatten(right))), element)
+            == listContains(flatten(Node(left, right, t)), element)
+            ;
     }
 }
